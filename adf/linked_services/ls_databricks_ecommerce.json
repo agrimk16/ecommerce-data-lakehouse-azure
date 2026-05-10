@@ -1,0 +1,31 @@
+{
+  "name": "ls_databricks_ecommerce",
+  "type": "Microsoft.DataFactory/factories/linkedServices",
+  "properties": {
+    "description": "Connection to Azure Databricks workspace for PySpark notebook execution. Uses Key Vault-backed access token.",
+    "annotations": ["databricks", "spark"],
+    "type": "AzureDatabricks",
+    "typeProperties": {
+      "domain": "https://<DATABRICKS_WORKSPACE_URL>",
+      "accessToken": {
+        "type": "AzureKeyVaultSecret",
+        "store": {
+          "referenceName": "ls_akv_ecommerce_keyvault",
+          "type": "LinkedServiceReference"
+        },
+        "secretName": "databricks-access-token"
+      },
+      "newClusterNodeType": "Standard_DS3_v2",
+      "newClusterNumOfWorker": "1",
+      "newClusterSparkEnvVars": {
+        "PYSPARK_PYTHON": "/databricks/python3/bin/python3"
+      },
+      "newClusterVersion": "13.3.x-scala2.12",
+      "clusterOption": "Fixed"
+    },
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    }
+  }
+}

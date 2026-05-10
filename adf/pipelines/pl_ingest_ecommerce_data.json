@@ -1,0 +1,109 @@
+{
+  "name": "pl_ingest_ecommerce_data",
+  "type": "Microsoft.DataFactory/factories/pipelines",
+  "properties": {
+    "description": "Ingests all e-commerce CSV files from source to ADLS Gen2 Bronze layer. Uses Lookup + ForEach for config-driven ingestion (same pattern as COVID project's pl_ingest_ecdc_data).",
+    "activities": [
+      {
+        "name": "Lookup Dataset File List",
+        "description": "Reads the JSON config file to get list of e-commerce files to ingest",
+        "type": "Lookup",
+        "dependsOn": [],
+        "typeProperties": {
+          "source": {
+            "type": "JsonSource",
+            "storeSettings": {
+              "type": "AzureBlobFSReadSettings",
+              "recursive": true
+            }
+          },
+          "dataset": {
+            "referenceName": "ds_ecommerce_file_list",
+            "type": "DatasetReference"
+          },
+          "firstRowOnly": false
+        }
+      },
+      {
+        "name": "ForEach Dataset File",
+        "description": "Iterates through each dataset file and copies from HTTP to Bronze layer as Parquet",
+        "type": "ForEach",
+        "dependsOn": [
+          {
+            "activity": "Lookup Dataset File List",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "typeProperties": {
+          "isSequential": false,
+          "batchCount": 4,
+          "items": {
+            "value": "@activity('Lookup Dataset File List').output.value",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "name": "Copy Dataset to Bronze",
+              "description": "Copy a single dataset file from HTTP source to ADLS Gen2 Bronze layer",
+              "type": "Copy",
+              "policy": {
+                "timeout": "0.01:00:00",
+                "retry": 2,
+                "retryIntervalInSeconds": 30,
+                "secureOutput": false,
+                "secureInput": false
+              },
+              "typeProperties": {
+                "source": {
+                  "type": "DelimitedTextSource",
+                  "storeSettings": {
+                    "type": "HttpReadSettings",
+                    "requestMethod": "GET"
+                  },
+                  "formatSettings": {
+                    "type": "DelimitedTextReadSettings"
+                  }
+                },
+                "sink": {
+                  "type": "ParquetSink",
+                  "storeSettings": {
+                    "type": "AzureBlobFSWriteSettings"
+                  },
+                  "formatSettings": {
+                    "type": "ParquetWriteSettings"
+                  }
+                },
+                "enableStaging": false
+              },
+              "inputs": [
+                {
+                  "referenceName": "ds_ecommerce_raw_csv_http",
+                  "type": "DatasetReference",
+                  "parameters": {
+                    "relativeURL": {
+                      "value": "@item().sourceFileName",
+                      "type": "Expression"
+                    }
+                  }
+                }
+              ],
+              "outputs": [
+                {
+                  "referenceName": "ds_ecommerce_bronze_parquet",
+                  "type": "DatasetReference",
+                  "parameters": {
+                    "sinkFolder": {
+                      "value": "@concat(item().sinkFolder, '/', formatDateTime(utcNow(), 'yyyy/MM/dd'))",
+                      "type": "Expression"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "annotations": ["ingestion", "ecommerce", "config-driven", "lookup-foreach"]
+  }
+}

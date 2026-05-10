@@ -1,0 +1,26 @@
+{
+  "name": "tr_daily_ecommerce_schedule",
+  "type": "Microsoft.DataFactory/factories/triggers",
+  "properties": {
+    "description": "Daily schedule trigger that fires at 6:00 AM IST (00:30 UTC) to run the master pipeline: Ingest → Bronze-to-Silver → Silver-to-Gold.",
+    "annotations": ["schedule-trigger", "ecommerce", "daily"],
+    "runtimeState": "Stopped",
+    "type": "ScheduleTrigger",
+    "typeProperties": {
+      "recurrence": {
+        "frequency": "Day",
+        "interval": 1,
+        "startTime": "2024-01-01T00:30:00Z",
+        "timeZone": "India Standard Time"
+      }
+    },
+    "pipelines": [
+      {
+        "pipelineReference": {
+          "referenceName": "pl_master_pipeline",
+          "type": "PipelineReference"
+        }
+      }
+    ]
+  }
+}

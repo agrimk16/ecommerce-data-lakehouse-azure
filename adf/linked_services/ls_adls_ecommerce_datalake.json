@@ -1,0 +1,16 @@
+{
+  "name": "ls_adls_ecommerce_datalake",
+  "type": "Microsoft.DataFactory/factories/linkedServices",
+  "properties": {
+    "description": "Connection to Azure Data Lake Storage Gen2 for Bronze, Silver, and Gold layers. Replace <DATALAKE_ACCOUNT> with your storage account name from setup/variables.sh",
+    "annotations": ["adls", "data-lake", "medallion"],
+    "type": "AzureBlobFS",
+    "typeProperties": {
+      "url": "https://<DATALAKE_ACCOUNT>.dfs.core.windows.net/"
+    },
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    }
+  }
+}

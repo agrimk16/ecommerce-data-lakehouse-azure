@@ -1,0 +1,31 @@
+{
+  "name": "ds_ecommerce_raw_csv_http",
+  "type": "Microsoft.DataFactory/factories/datasets",
+  "properties": {
+    "description": "Source CSV from HTTP (parameterized with relative URL). Same pattern as COVID project's ds_ecdc_raw_csv_http.",
+    "linkedServiceName": {
+      "referenceName": "ls_http_kaggle_source",
+      "type": "LinkedServiceReference"
+    },
+    "parameters": {
+      "relativeURL": {
+        "type": "string"
+      }
+    },
+    "annotations": ["source", "csv", "parameterized"],
+    "type": "DelimitedText",
+    "typeProperties": {
+      "location": {
+        "type": "HttpServerLocation",
+        "relativeUrl": {
+          "value": "@dataset().relativeURL",
+          "type": "Expression"
+        }
+      },
+      "columnDelimiter": ",",
+      "escapeChar": "\\",
+      "firstRowAsHeader": true,
+      "quoteChar": "\""
+    }
+  }
+}

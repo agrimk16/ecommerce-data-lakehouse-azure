@@ -1,0 +1,42 @@
+[
+  {
+    "sourceFileName": "olist_orders_dataset.csv",
+    "sinkFolder": "orders",
+    "description": "Order header data (~100K orders)"
+  },
+  {
+    "sourceFileName": "olist_order_items_dataset.csv",
+    "sinkFolder": "order_items",
+    "description": "Order line items (~113K items)"
+  },
+  {
+    "sourceFileName": "olist_order_payments_dataset.csv",
+    "sinkFolder": "payments",
+    "description": "Payment details (~104K payments)"
+  },
+  {
+    "sourceFileName": "olist_customers_dataset.csv",
+    "sinkFolder": "customers",
+    "description": "Customer demographics (~99K customers)"
+  },
+  {
+    "sourceFileName": "olist_products_dataset.csv",
+    "sinkFolder": "products",
+    "description": "Product catalog (~33K products)"
+  },
+  {
+    "sourceFileName": "olist_sellers_dataset.csv",
+    "sinkFolder": "sellers",
+    "description": "Seller information (~3K sellers)"
+  },
+  {
+    "sourceFileName": "olist_order_reviews_dataset.csv",
+    "sinkFolder": "reviews",
+    "description": "Customer reviews (~100K reviews)"
+  },
+  {
+    "sourceFileName": "olist_geolocation_dataset.csv",
+    "sinkFolder": "geolocation",
+    "description": "Geolocation data (~1M records)"
+  }
+]

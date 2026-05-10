@@ -1,0 +1,134 @@
+{
+  "name": "pl_transform_silver_to_gold",
+  "type": "Microsoft.DataFactory/factories/pipelines",
+  "properties": {
+    "description": "Executes all Silver-to-Gold Databricks notebooks. Builds Star Schema with fact and dimension tables including SCD Type 2.",
+    "activities": [
+      {
+        "name": "Build Dim Date",
+        "description": "Silver→Gold: Generate date dimension (2016-2026) with calendar attributes",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/silver_to_gold/04_dim_date"
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Build Dim Customers",
+        "description": "Silver→Gold: Customer dimension with SCD Type 2 (valid_from/valid_to/is_current)",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/silver_to_gold/02_dim_customers",
+          "baseParameters": {
+            "processing_date": {
+              "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+              "type": "Expression"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Build Dim Products",
+        "description": "Silver→Gold: Product dimension with derived size_category and volume",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/silver_to_gold/03_dim_products"
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Build Dim Geography",
+        "description": "Silver→Gold: Geography dimension with Brazilian region mapping",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.01:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/silver_to_gold/05_dim_geography"
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Build Fact Orders",
+        "description": "Silver→Gold: Fact table with measures (order_amount, freight_value, delivery_days) and FKs to all dimensions. Depends on all dimensions being built first.",
+        "type": "DatabricksNotebook",
+        "dependsOn": [
+          {
+            "activity": "Build Dim Date",
+            "dependencyConditions": ["Succeeded"]
+          },
+          {
+            "activity": "Build Dim Customers",
+            "dependencyConditions": ["Succeeded"]
+          },
+          {
+            "activity": "Build Dim Products",
+            "dependencyConditions": ["Succeeded"]
+          },
+          {
+            "activity": "Build Dim Geography",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/silver_to_gold/01_fact_orders",
+          "baseParameters": {
+            "processing_date": {
+              "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+              "type": "Expression"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      }
+    ],
+    "annotations": [
+      "transformation",
+      "silver-to-gold",
+      "star-schema",
+      "databricks"
+    ]
+  }
+}

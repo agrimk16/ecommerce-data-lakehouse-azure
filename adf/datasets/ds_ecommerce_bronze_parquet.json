@@ -1,0 +1,29 @@
+{
+  "name": "ds_ecommerce_bronze_parquet",
+  "type": "Microsoft.DataFactory/factories/datasets",
+  "properties": {
+    "description": "Bronze layer in ADLS Gen2 — raw data as Parquet (parameterized sink folder). Same pattern as COVID project's ds_ecdc_raw_csv_dl.",
+    "linkedServiceName": {
+      "referenceName": "ls_adls_ecommerce_datalake",
+      "type": "LinkedServiceReference"
+    },
+    "parameters": {
+      "sinkFolder": {
+        "type": "string"
+      }
+    },
+    "annotations": ["bronze", "parquet", "raw"],
+    "type": "Parquet",
+    "typeProperties": {
+      "location": {
+        "type": "AzureBlobFSLocation",
+        "folderPath": {
+          "value": "@dataset().sinkFolder",
+          "type": "Expression"
+        },
+        "fileSystem": "bronze"
+      },
+      "compressionCodec": "snappy"
+    }
+  }
+}

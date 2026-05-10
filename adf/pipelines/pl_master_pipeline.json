@@ -1,0 +1,59 @@
+{
+  "name": "pl_master_pipeline",
+  "type": "Microsoft.DataFactory/factories/pipelines",
+  "properties": {
+    "description": "Master orchestration pipeline. Executes all stages sequentially: Ingest → Bronze-to-Silver → Silver-to-Gold. Each stage must succeed before the next begins.",
+    "activities": [
+      {
+        "name": "Ingest Ecommerce Data",
+        "description": "Stage 1: Config-driven ingestion from HTTP source to Bronze (Parquet) in ADLS Gen2",
+        "type": "ExecutePipeline",
+        "dependsOn": [],
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "pl_ingest_ecommerce_data",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "Transform Bronze to Silver",
+        "description": "Stage 2: Cleanse, deduplicate, and type-cast Bronze data into Silver (Delta Lake)",
+        "type": "ExecutePipeline",
+        "dependsOn": [
+          {
+            "activity": "Ingest Ecommerce Data",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "pl_transform_bronze_to_silver",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "Transform Silver to Gold",
+        "description": "Stage 3: Build Star Schema (fact + dimension tables) in Gold layer (Delta Lake)",
+        "type": "ExecutePipeline",
+        "dependsOn": [
+          {
+            "activity": "Transform Bronze to Silver",
+            "dependencyConditions": ["Succeeded"]
+          }
+        ],
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "pl_transform_silver_to_gold",
+            "type": "PipelineReference"
+          },
+          "waitOnCompletion": true
+        }
+      }
+    ],
+    "annotations": ["orchestration", "master", "end-to-end"]
+  }
+}

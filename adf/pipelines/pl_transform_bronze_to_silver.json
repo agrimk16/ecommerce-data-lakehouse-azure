@@ -1,0 +1,135 @@
+{
+  "name": "pl_transform_bronze_to_silver",
+  "type": "Microsoft.DataFactory/factories/pipelines",
+  "properties": {
+    "description": "Executes all Bronze-to-Silver Databricks notebooks in parallel. Cleanses, validates, and writes Delta Lake tables to Silver layer.",
+    "activities": [
+      {
+        "name": "Transform Orders",
+        "description": "Bronze→Silver: Type casting, validation, derived columns (delivery_days, is_late_delivery)",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/bronze_to_silver/01_orders_bronze_to_silver",
+          "baseParameters": {
+            "processing_date": {
+              "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+              "type": "Expression"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Transform Customers",
+        "description": "Bronze→Silver: String standardization, deduplication",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/bronze_to_silver/02_customers_bronze_to_silver",
+          "baseParameters": {
+            "processing_date": {
+              "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+              "type": "Expression"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Transform Products",
+        "description": "Bronze→Silver: Category translation PT→EN, null handling, derived size_category",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/bronze_to_silver/03_products_bronze_to_silver",
+          "baseParameters": {
+            "processing_date": {
+              "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+              "type": "Expression"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Transform Payments",
+        "description": "Bronze→Silver: Aggregation to order-level payment summary",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/bronze_to_silver/04_payments_bronze_to_silver",
+          "baseParameters": {
+            "processing_date": {
+              "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+              "type": "Expression"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      },
+      {
+        "name": "Transform Order Items",
+        "description": "Bronze→Silver: Numeric validation, composite key dedup, line_total_value derivation",
+        "type": "DatabricksNotebook",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.02:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 60
+        },
+        "typeProperties": {
+          "notebookPath": "/Repos/ecommerce-lakehouse/databricks/bronze_to_silver/05_order_items_bronze_to_silver",
+          "baseParameters": {
+            "processing_date": {
+              "value": "@formatDateTime(utcNow(), 'yyyy-MM-dd')",
+              "type": "Expression"
+            }
+          }
+        },
+        "linkedServiceName": {
+          "referenceName": "ls_databricks_ecommerce",
+          "type": "LinkedServiceReference"
+        }
+      }
+    ],
+    "annotations": [
+      "transformation",
+      "bronze-to-silver",
+      "databricks",
+      "parallel"
+    ]
+  }
+}

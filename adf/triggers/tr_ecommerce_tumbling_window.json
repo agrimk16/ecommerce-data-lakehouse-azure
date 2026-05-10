@@ -1,0 +1,32 @@
+{
+  "name": "tr_ecommerce_tumbling_window",
+  "type": "Microsoft.DataFactory/factories/triggers",
+  "properties": {
+    "description": "Tumbling window trigger for historical backfill of ecommerce data. Processes one day at a time with configurable concurrency to reload Bronze and re-run transformations.",
+    "annotations": ["tumbling-window", "backfill", "ecommerce"],
+    "runtimeState": "Stopped",
+    "type": "TumblingWindowTrigger",
+    "typeProperties": {
+      "frequency": "Hour",
+      "interval": 24,
+      "startTime": "2016-09-01T00:00:00Z",
+      "endTime": "2018-10-01T00:00:00Z",
+      "delay": "00:00:00",
+      "maxConcurrency": 5,
+      "retryPolicy": {
+        "count": 3,
+        "intervalInSeconds": 15
+      }
+    },
+    "pipeline": {
+      "pipelineReference": {
+        "referenceName": "pl_master_pipeline",
+        "type": "PipelineReference"
+      },
+      "parameters": {
+        "windowStart": "@trigger().outputs.windowStartTime",
+        "windowEnd": "@trigger().outputs.windowEndTime"
+      }
+    }
+  }
+}

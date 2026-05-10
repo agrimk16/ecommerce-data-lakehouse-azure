@@ -1,0 +1,44 @@
+#!/bin/bash
+# ============================================================================
+# Azure Resource Variables — TEMPLATE
+# Copy this file to variables.sh and fill in your values:
+#   cp variables.sh.template variables.sh
+# ============================================================================
+
+# --- Unique Suffix (change this to something unique to you) ---
+# Use 4-8 lowercase alphanumeric characters (e.g., your initials + numbers)
+UNIQUE_SUFFIX="CHANGEME"
+
+# --- General ---
+export RESOURCE_GROUP="rg-ecommerce-lakehouse"
+export LOCATION="centralindia"                    # Change to your preferred region
+export SUBSCRIPTION_ID="<your-subscription-id>"   # az account show --query id -o tsv
+
+# --- Data Lake Storage Gen2 ---
+export DATALAKE_ACCOUNT="ecomlhdl${UNIQUE_SUFFIX}"
+export DATALAKE_CONTAINER_BRONZE="bronze"
+export DATALAKE_CONTAINER_SILVER="silver"
+export DATALAKE_CONTAINER_GOLD="gold"
+export DATALAKE_CONTAINER_CONFIG="config"
+
+# --- Azure Data Factory ---
+export DATA_FACTORY_NAME="ecomlh-adf-${UNIQUE_SUFFIX}"
+
+# --- Azure Databricks ---
+export DATABRICKS_WORKSPACE="ecomlh-dbw-${UNIQUE_SUFFIX}"
+
+# --- Azure Synapse Analytics ---
+export SYNAPSE_WORKSPACE="ecomlh-syn-${UNIQUE_SUFFIX}"
+export SYNAPSE_SQL_ADMIN_USER="sqladminuser"
+export SYNAPSE_SQL_ADMIN_PASSWORD="<set-a-strong-password>"  # Change this!
+
+# --- Azure Event Hubs ---
+export EVENTHUB_NAMESPACE="ecomlh-eh-${UNIQUE_SUFFIX}"
+export EVENTHUB_NAME="clickstream-events"
+
+# --- Azure Key Vault ---
+export KEY_VAULT_NAME="ecomlh-kv-${UNIQUE_SUFFIX}"
+
+# --- Tags ---
+export TAG_PROJECT="ecommerce-lakehouse"
+export TAG_ENVIRONMENT="dev"

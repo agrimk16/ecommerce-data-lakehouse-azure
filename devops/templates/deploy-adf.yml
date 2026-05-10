@@ -1,0 +1,81 @@
+# ============================================================
+# Template: Deploy ADF Pipelines
+# ============================================================
+
+jobs:
+  - job: DeployADF
+    displayName: "Publish ADF Artifacts"
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Deploy ADF Linked Services"
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: "bash"
+          scriptLocation: "inlineScript"
+          inlineScript: |
+            echo "=== Deploying ADF Linked Services ==="
+            ADF_NAME=$(az deployment group show \
+              --resource-group $(resourceGroup) \
+              --name deploy-adf \
+              --query properties.outputs.dataFactoryName.value -o tsv)
+
+            for file in adf/linked_services/*.json; do
+              name=$(basename "$file" .json)
+              echo "  Deploying linked service: $name"
+              az datafactory linked-service create \
+                --resource-group $(resourceGroup) \
+                --factory-name "$ADF_NAME" \
+                --linked-service-name "$name" \
+                --properties @"$file" || true
+            done
+            echo "✓ Linked services deployed"
+
+      - task: AzureCLI@2
+        displayName: "Deploy ADF Datasets"
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: "bash"
+          scriptLocation: "inlineScript"
+          inlineScript: |
+            echo "=== Deploying ADF Datasets ==="
+            ADF_NAME=$(az deployment group show \
+              --resource-group $(resourceGroup) \
+              --name deploy-adf \
+              --query properties.outputs.dataFactoryName.value -o tsv)
+
+            for file in adf/datasets/*.json; do
+              name=$(basename "$file" .json)
+              echo "  Deploying dataset: $name"
+              az datafactory dataset create \
+                --resource-group $(resourceGroup) \
+                --factory-name "$ADF_NAME" \
+                --dataset-name "$name" \
+                --properties @"$file" || true
+            done
+            echo "✓ Datasets deployed"
+
+      - task: AzureCLI@2
+        displayName: "Deploy ADF Pipelines"
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: "bash"
+          scriptLocation: "inlineScript"
+          inlineScript: |
+            echo "=== Deploying ADF Pipelines ==="
+            ADF_NAME=$(az deployment group show \
+              --resource-group $(resourceGroup) \
+              --name deploy-adf \
+              --query properties.outputs.dataFactoryName.value -o tsv)
+
+            for file in adf/pipelines/*.json; do
+              name=$(basename "$file" .json)
+              echo "  Deploying pipeline: $name"
+              az datafactory pipeline create \
+                --resource-group $(resourceGroup) \
+                --factory-name "$ADF_NAME" \
+                --pipeline-name "$name" \
+                --pipeline @"$file" || true
+            done
+            echo "✓ Pipelines deployed"

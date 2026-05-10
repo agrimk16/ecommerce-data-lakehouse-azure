@@ -1,0 +1,119 @@
+# ============================================================
+# Azure DevOps CI/CD Pipeline
+# E-Commerce Data Lakehouse
+# ============================================================
+# This pipeline:
+# 1. Validates Bicep templates (lint)
+# 2. Deploys infrastructure
+# 3. Publishes ADF pipelines
+# 4. Deploys Databricks notebooks
+# 5. Runs data quality tests
+# ============================================================
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infrastructure/**
+      - adf/**
+      - databricks/**
+      - synapse/**
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  - group: ecommerce-lakehouse-vars # Variable group with secrets
+  - name: resourceGroup
+    value: "rg-ecommerce-lakehouse"
+  - name: azureSubscription
+    value: "Azure-Pay-As-You-Go" # Your service connection name
+  - name: environment
+    value: "dev"
+
+# ============================================================
+# STAGES
+# ============================================================
+stages:
+  # --- Stage 1: Validate ---
+  - stage: Validate
+    displayName: "Validate & Lint"
+    jobs:
+      - job: ValidateBicep
+        displayName: "Validate Bicep Templates"
+        steps:
+          - task: AzureCLI@2
+            displayName: "Lint Bicep"
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                echo "=== Validating Bicep templates ==="
+                az bicep build --file infrastructure/main.bicep
+                echo "✓ Bicep validation passed"
+
+          - task: AzureCLI@2
+            displayName: "What-If Deployment"
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                az deployment group what-if \
+                  --resource-group $(resourceGroup) \
+                  --template-file infrastructure/main.bicep \
+                  --parameters @infrastructure/parameters/$(environment).parameters.json
+
+  # --- Stage 2: Deploy Infrastructure ---
+  - stage: DeployInfra
+    displayName: "Deploy Infrastructure"
+    dependsOn: Validate
+    condition: succeeded()
+    jobs:
+      - deployment: DeployAzure
+        displayName: "Deploy Azure Resources"
+        environment: "ecommerce-$(environment)"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                - task: AzureCLI@2
+                  displayName: "Deploy Bicep"
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: "bash"
+                    scriptLocation: "inlineScript"
+                    inlineScript: |
+                      az deployment group create \
+                        --resource-group $(resourceGroup) \
+                        --template-file infrastructure/main.bicep \
+                        --parameters @infrastructure/parameters/$(environment).parameters.json \
+                        --parameters synapseSqlAdminPassword=$(synapseSqlPassword)
+
+  # --- Stage 3: Deploy ADF ---
+  - stage: DeployADF
+    displayName: "Deploy ADF Pipelines"
+    dependsOn: DeployInfra
+    condition: succeeded()
+    jobs:
+      - template: templates/deploy-adf.yml
+
+  # --- Stage 4: Deploy Databricks ---
+  - stage: DeployDatabricks
+    displayName: "Deploy Databricks Notebooks"
+    dependsOn: DeployInfra
+    condition: succeeded()
+    jobs:
+      - template: templates/deploy-databricks.yml
+
+  # --- Stage 5: Deploy Synapse ---
+  - stage: DeploySynapse
+    displayName: "Deploy Synapse SQL"
+    dependsOn: DeployInfra
+    condition: succeeded()
+    jobs:
+      - template: templates/deploy-synapse.yml

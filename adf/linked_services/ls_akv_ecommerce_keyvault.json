@@ -1,0 +1,16 @@
+{
+  "name": "ls_akv_ecommerce_keyvault",
+  "type": "Microsoft.DataFactory/factories/linkedServices",
+  "properties": {
+    "description": "Connection to Azure Key Vault for secrets management. Uses ADF's System-Assigned Managed Identity — no passwords needed. PREREQUISITE: ADF managed identity must have GET and LIST secret permissions (provision_resources.sh sets this up).",
+    "annotations": ["key-vault", "security"],
+    "type": "AzureKeyVault",
+    "typeProperties": {
+      "baseUrl": "https://<KEY_VAULT_NAME>.vault.azure.net/"
+    },
+    "connectVia": {
+      "referenceName": "AutoResolveIntegrationRuntime",
+      "type": "IntegrationRuntimeReference"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "ds_ecommerce_file_list",
+  "type": "Microsoft.DataFactory/factories/datasets",
+  "properties": {
+    "description": "JSON config file listing all e-commerce dataset files to ingest (same pattern as COVID project's ds_ecdc_file_list)",
+    "linkedServiceName": {
+      "referenceName": "ls_adls_ecommerce_datalake",
+      "type": "LinkedServiceReference"
+    },
+    "annotations": ["config", "lookup"],
+    "type": "Json",
+    "typeProperties": {
+      "location": {
+        "type": "AzureBlobFSLocation",
+        "fileName": "dataset_file_list.json",
+        "fileSystem": "config"
+      }
+    }
+  }
+}

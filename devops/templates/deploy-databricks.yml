@@ -1,0 +1,65 @@
+# ============================================================
+# Template: Deploy Databricks Notebooks
+# ============================================================
+
+jobs:
+  - job: DeployDatabricks
+    displayName: "Deploy Databricks Notebooks"
+    steps:
+      - checkout: self
+
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: "3.9"
+
+      - script: |
+          pip install databricks-cli
+        displayName: "Install Databricks CLI"
+
+      - task: AzureCLI@2
+        displayName: "Configure Databricks CLI"
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: "bash"
+          scriptLocation: "inlineScript"
+          inlineScript: |
+            # Get Databricks workspace URL from deployment
+            DATABRICKS_URL=$(az deployment group show \
+              --resource-group $(resourceGroup) \
+              --name deploy-databricks \
+              --query properties.outputs.workspaceUrl.value -o tsv)
+
+            # Get AAD token for Databricks
+            DATABRICKS_TOKEN=$(az account get-access-token \
+              --resource 2ff814a6-3304-4ab8-85cb-cd0e6f879c1d \
+              --query accessToken -o tsv)
+
+            echo "##vso[task.setvariable variable=DATABRICKS_HOST]$DATABRICKS_URL"
+            echo "##vso[task.setvariable variable=DATABRICKS_TOKEN;issecret=true]$DATABRICKS_TOKEN"
+
+      - script: |
+          echo "=== Deploying Databricks Notebooks ==="
+
+          # Create workspace folders
+          databricks workspace mkdirs /Repos/ecommerce-lakehouse/databricks/setup
+          databricks workspace mkdirs /Repos/ecommerce-lakehouse/databricks/bronze_to_silver
+          databricks workspace mkdirs /Repos/ecommerce-lakehouse/databricks/silver_to_gold
+          databricks workspace mkdirs /Repos/ecommerce-lakehouse/databricks/streaming
+          databricks workspace mkdirs /Repos/ecommerce-lakehouse/databricks/utils
+
+          # Import notebooks
+          for dir in setup bronze_to_silver silver_to_gold streaming utils; do
+            for file in databricks/$dir/*.py; do
+              name=$(basename "$file" .py)
+              echo "  Importing: $dir/$name"
+              databricks workspace import "$file" \
+                "/Repos/ecommerce-lakehouse/databricks/$dir/$name" \
+                --language PYTHON --overwrite
+            done
+          done
+
+          echo "✓ All notebooks deployed"
+        displayName: "Import Notebooks to Workspace"
+        env:
+          DATABRICKS_HOST: $(DATABRICKS_HOST)
+          DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)

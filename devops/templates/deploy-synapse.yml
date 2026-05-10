@@ -1,0 +1,58 @@
+# ============================================================
+# Template: Deploy Synapse SQL Scripts
+# ============================================================
+
+jobs:
+  - job: DeploySynapse
+    displayName: "Deploy Synapse SQL"
+    steps:
+      - checkout: self
+
+      - task: AzureCLI@2
+        displayName: "Run Synapse SQL Scripts"
+        inputs:
+          azureSubscription: $(azureSubscription)
+          scriptType: "bash"
+          scriptLocation: "inlineScript"
+          inlineScript: |
+            echo "=== Deploying Synapse SQL Scripts ==="
+
+            # Get Synapse endpoint
+            SYNAPSE_ENDPOINT=$(az deployment group show \
+              --resource-group $(resourceGroup) \
+              --name deploy-synapse \
+              --query properties.outputs.synapseSqlEndpoint.value -o tsv)
+
+            echo "Synapse endpoint: $SYNAPSE_ENDPOINT"
+
+            # Run external tables script
+            echo "  Running: create_gold_external_tables.sql"
+            sqlcmd -S "$SYNAPSE_ENDPOINT" \
+              -d ecommerce_gold \
+              -U $(synapseSqlAdminUser) \
+              -P $(synapseSqlPassword) \
+              -i synapse/external_tables/create_gold_external_tables.sql
+
+            # Run views
+            for file in synapse/views/*.sql; do
+              name=$(basename "$file")
+              echo "  Running: $name"
+              sqlcmd -S "$SYNAPSE_ENDPOINT" \
+                -d ecommerce_gold \
+                -U $(synapseSqlAdminUser) \
+                -P $(synapseSqlPassword) \
+                -i "$file"
+            done
+
+            # Run stored procedures
+            for file in synapse/stored_procedures/*.sql; do
+              name=$(basename "$file")
+              echo "  Running: $name"
+              sqlcmd -S "$SYNAPSE_ENDPOINT" \
+                -d ecommerce_gold \
+                -U $(synapseSqlAdminUser) \
+                -P $(synapseSqlPassword) \
+                -i "$file"
+            done
+
+            echo "✓ Synapse SQL deployed"
