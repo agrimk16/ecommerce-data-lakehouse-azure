@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 620" font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.12"/>
+    </filter>
+    <marker id="fk" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#78909C"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="920" height="620" fill="#F0F4F8" rx="14"/>
+
+  <!-- Title -->
+  <text x="460" y="32" text-anchor="middle" font-size="15" font-weight="700" fill="#1A237E">Gold Layer — Star Schema Design</text>
+  <text x="460" y="52" text-anchor="middle" font-size="10.5" fill="#607D8B">Grain: one row per order · SCD Type 2 on dim_customers · Pre-generated dim_date (2016–2026)</text>
+
+  <!-- ════ CONNECTOR LINES (drawn first so boxes render on top) ════ -->
+  <!-- fact → dim_date (top) -->
+  <line x1="460" y1="295" x2="460" y2="188" stroke="#B0BEC5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#fk)"/>
+  <rect x="400" y="228" width="120" height="16" fill="#F0F4F8"/>
+  <text x="460" y="240" text-anchor="middle" font-size="8" fill="#90A4AE">order_date_key → date_key</text>
+
+  <!-- fact → dim_customers (left) -->
+  <line x1="340" y1="367" x2="238" y2="367" stroke="#B0BEC5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#fk)"/>
+  <rect x="258" y="354" width="120" height="16" fill="#F0F4F8"/>
+  <text x="318" y="366" text-anchor="middle" font-size="8" fill="#90A4AE">customer_id → customer_id</text>
+
+  <!-- fact → dim_products (right) -->
+  <line x1="580" y1="367" x2="682" y2="367" stroke="#B0BEC5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#fk)"/>
+  <rect x="592" y="354" width="120" height="16" fill="#F0F4F8"/>
+  <text x="652" y="366" text-anchor="middle" font-size="8" fill="#90A4AE">product_id → product_id</text>
+
+  <!-- fact → dim_geography (bottom) -->
+  <line x1="460" y1="440" x2="460" y2="536" stroke="#B0BEC5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#fk)"/>
+  <rect x="380" y="474" width="160" height="16" fill="#F0F4F8"/>
+  <text x="460" y="486" text-anchor="middle" font-size="8" fill="#90A4AE">geography_key → geography_sk</text>
+
+  <!-- ════ FACT TABLE (center) ════ -->
+  <rect x="340" y="290" width="240" height="155" fill="#1A237E" rx="10" filter="url(#shadow)"/>
+  <rect x="340" y="290" width="240" height="36" fill="#283593" rx="10"/>
+  <rect x="340" y="314" width="240" height="12" fill="#283593"/>
+  <text x="460" y="308" text-anchor="middle" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">FACT — fact_orders</text>
+  <text x="460" y="322" text-anchor="middle" font-size="8.5" fill="#9FA8DA">Grain: 1 row per order · ~100K rows</text>
+
+  <!-- Fact keys -->
+  <text x="354" y="342" font-size="8.5" fill="#E8EAF6" font-weight="600">SURROGATE KEYS (FK)</text>
+  <text x="354" y="356" font-size="8.5" fill="#C5CAE9">customer_sk · date_key · product_id</text>
+  <text x="354" y="369" font-size="8.5" fill="#C5CAE9">geography_sk</text>
+
+  <!-- Fact measures -->
+  <line x1="350" y1="378" x2="570" y2="378" stroke="#3949AB" stroke-width="1"/>
+  <text x="354" y="392" font-size="8.5" fill="#E8EAF6" font-weight="600">MEASURES</text>
+  <text x="354" y="406" font-size="8.5" fill="#C5CAE9">total_item_value    total_freight_value</text>
+  <text x="354" y="420" font-size="8.5" fill="#C5CAE9">total_payment_value item_count</text>
+  <text x="354" y="434" font-size="8.5" fill="#C5CAE9">delivery_days       order_status</text>
+
+  <!-- ════ DIM DATE (top) ════ -->
+  <rect x="340" y="66" width="240" height="122" fill="#0D47A1" rx="10" filter="url(#shadow)"/>
+  <rect x="340" y="66" width="240" height="36" fill="#1565C0" rx="10"/>
+  <rect x="340" y="90" width="240" height="12" fill="#1565C0"/>
+  <text x="460" y="84" text-anchor="middle" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">DIM — dim_date</text>
+  <text x="460" y="98" text-anchor="middle" font-size="8.5" fill="#BBDEFB">4,018 rows · 2016–2026 · Pre-generated</text>
+  <text x="354" y="118" font-size="8.5" fill="#E3F2FD" font-weight="600">PK: date_key (int YYYYMMDD)</text>
+  <text x="354" y="132" font-size="8.5" fill="#BBDEFB">year · quarter · month · month_name</text>
+  <text x="354" y="146" font-size="8.5" fill="#BBDEFB">week_of_year · day_of_week · day_name</text>
+  <text x="354" y="160" font-size="8.5" fill="#BBDEFB">is_weekend · is_month_end · year_quarter</text>
+  <text x="354" y="174" font-size="8.5" fill="#BBDEFB">is_month_start · day_of_year</text>
+
+  <!-- ════ DIM CUSTOMERS (left) ════ -->
+  <rect x="30" y="278" width="205" height="185" fill="#00695C" rx="10" filter="url(#shadow)"/>
+  <rect x="30" y="278" width="205" height="36" fill="#00796B" rx="10"/>
+  <rect x="30" y="302" width="205" height="12" fill="#00796B"/>
+  <text x="132" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">DIM — dim_customers</text>
+  <text x="132" y="310" text-anchor="middle" font-size="8.5" fill="#B2DFDB">SCD Type 2 · Full History Tracking</text>
+  <text x="44" y="330" font-size="8.5" fill="#E0F2F1" font-weight="600">PK: customer_sk (surrogate)</text>
+  <text x="44" y="344" font-size="8.5" fill="#B2DFDB">customer_id · customer_unique_id</text>
+  <text x="44" y="358" font-size="8.5" fill="#B2DFDB">customer_city · customer_state</text>
+  <text x="44" y="372" font-size="8.5" fill="#B2DFDB">customer_zip_code_prefix</text>
+  <line x1="44" y1="381" x2="225" y2="381" stroke="#00897B" stroke-width="1"/>
+  <text x="44" y="395" font-size="8.5" fill="#E0F2F1" font-weight="600">SCD TYPE 2 COLUMNS</text>
+  <text x="44" y="409" font-size="8.5" fill="#B2DFDB">is_current · valid_from · valid_to</text>
+  <text x="44" y="423" font-size="8.5" fill="#B2DFDB">record_hash (change detection)</text>
+  <text x="44" y="440" font-size="8" fill="#80CBC4">Old rows: is_current=false, valid_to=today</text>
+  <text x="44" y="453" font-size="8" fill="#80CBC4">New rows: is_current=true, valid_to=null</text>
+
+  <!-- ════ DIM PRODUCTS (right) ════ -->
+  <rect x="685" y="278" width="205" height="185" fill="#4527A0" rx="10" filter="url(#shadow)"/>
+  <rect x="685" y="278" width="205" height="36" fill="#512DA8" rx="10"/>
+  <rect x="685" y="302" width="205" height="12" fill="#512DA8"/>
+  <text x="787" y="296" text-anchor="middle" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">DIM — dim_products</text>
+  <text x="787" y="310" text-anchor="middle" font-size="8.5" fill="#D1C4E9">~33K rows · Derived Attributes</text>
+  <text x="699" y="330" font-size="8.5" fill="#EDE7F6" font-weight="600">PK: product_sk (surrogate)</text>
+  <text x="699" y="344" font-size="8.5" fill="#D1C4E9">product_id · category (EN translated)</text>
+  <text x="699" y="358" font-size="8.5" fill="#D1C4E9">product_weight_g · photos_qty</text>
+  <text x="699" y="372" font-size="8.5" fill="#D1C4E9">length_cm · height_cm · width_cm</text>
+  <line x1="699" y1="381" x2="880" y2="381" stroke="#7B1FA2" stroke-width="1"/>
+  <text x="699" y="395" font-size="8.5" fill="#EDE7F6" font-weight="600">DERIVED COLUMNS</text>
+  <text x="699" y="409" font-size="8.5" fill="#D1C4E9">product_volume_cm3 (L×H×W)</text>
+  <text x="699" y="423" font-size="8.5" fill="#D1C4E9">size_category:</text>
+  <text x="699" y="437" font-size="8" fill="#CE93D8">Small &lt;500g · Medium 500–2000g</text>
+  <text x="699" y="451" font-size="8" fill="#CE93D8">Large 2–10kg · Extra Large &gt;10kg</text>
+
+  <!-- ════ DIM GEOGRAPHY (bottom) ════ -->
+  <rect x="330" y="538" width="260" height="66" fill="#1B5E20" rx="10" filter="url(#shadow)"/>
+  <rect x="330" y="538" width="260" height="30" fill="#2E7D32" rx="10"/>
+  <rect x="330" y="556" width="260" height="12" fill="#2E7D32"/>
+  <text x="460" y="552" text-anchor="middle" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">DIM — dim_geography</text>
+  <text x="460" y="566" text-anchor="middle" font-size="8.5" fill="#C8E6C9">Zip-level · 5 Brazilian Regions</text>
+  <text x="344" y="583" font-size="8.5" fill="#A5D6A7">geography_sk · zip_code_prefix · city · state · latitude · longitude</text>
+  <text x="344" y="597" font-size="8.5" fill="#A5D6A7">region: SE · S · NE · CW · N  (mapped from state codes)</text>
+
+  <!-- ════ LEGEND ════ -->
+  <rect x="16" y="493" width="190" height="110" fill="white" rx="8" filter="url(#shadow)"/>
+  <text x="111" y="511" text-anchor="middle" font-size="9" font-weight="700" fill="#37474F">LEGEND</text>
+  <line x1="26" y1="516" x2="196" y2="516" stroke="#ECEFF1" stroke-width="1"/>
+  <line x1="30" y1="530" x2="60" y2="530" stroke="#B0BEC5" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <text x="65" y="534" font-size="8.5" fill="#607D8B">Foreign Key (FK)</text>
+  <rect x="30" y="544" width="16" height="10" fill="#1A237E" rx="2"/>
+  <text x="51" y="553" font-size="8.5" fill="#607D8B">Fact Table</text>
+  <rect x="30" y="562" width="16" height="10" fill="#0D47A1" rx="2"/>
+  <text x="51" y="571" font-size="8.5" fill="#607D8B">Dimension Table</text>
+  <rect x="30" y="580" width="16" height="10" fill="#00695C" rx="2"/>
+  <text x="51" y="589" font-size="8.5" fill="#607D8B">SCD Type 2</text>
+
+  <!-- ════ ANALYTICS BOX ════ -->
+  <rect x="714" y="493" width="190" height="110" fill="white" rx="8" filter="url(#shadow)"/>
+  <text x="809" y="511" text-anchor="middle" font-size="9" font-weight="700" fill="#37474F">CONSUMED BY</text>
+  <line x1="724" y1="516" x2="894" y2="516" stroke="#ECEFF1" stroke-width="1"/>
+  <text x="724" y="532" font-size="8.5" fill="#607D8B">Azure Synapse Serverless SQL</text>
+  <text x="724" y="546" font-size="8.5" fill="#607D8B">  vw_customer_lifetime_value</text>
+  <text x="724" y="560" font-size="8.5" fill="#607D8B">  vw_sales_by_category</text>
+  <text x="724" y="574" font-size="8.5" fill="#607D8B">  vw_daily_revenue</text>
+  <text x="724" y="588" font-size="8.5" fill="#607D8B">Power BI — 4-page dashboard</text>
+  <text x="724" y="601" font-size="8.5" fill="#9E9E9E">All via OPENROWSET(DELTA)</text>
+
+</svg>

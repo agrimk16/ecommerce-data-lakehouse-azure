@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#90A4AE"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="400" fill="#F0F4F8" rx="14"/>
+
+  <!-- Title -->
+  <text x="500" y="32" text-anchor="middle" font-size="15" font-weight="700" fill="#1A237E">Medallion Architecture — Bronze · Silver · Gold</text>
+  <text x="500" y="50" text-anchor="middle" font-size="10.5" fill="#607D8B">Each layer progressively adds quality, structure, and business value · All stored on ADLS Gen2 · Delta Lake from Silver onward</text>
+
+  <!-- ════ BRONZE LAYER ════ -->
+  <rect x="16" y="64" width="300" height="322" fill="#FBE9E7" rx="10" filter="url(#shadow)"/>
+  <!-- Header -->
+  <rect x="16" y="64" width="300" height="44" fill="#BF360C" rx="10"/>
+  <rect x="16" y="94" width="300" height="14" fill="#BF360C"/>
+  <text x="166" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="white" letter-spacing="1">BRONZE LAYER</text>
+  <text x="166" y="100" text-anchor="middle" font-size="9" fill="#FFCCBC">Raw · Immutable · Audit Trail</text>
+
+  <!-- Badge -->
+  <rect x="26" y="118" width="280" height="22" fill="#E64A19" rx="4"/>
+  <text x="166" y="133" text-anchor="middle" font-size="9" font-weight="600" fill="white">Format: Parquet · Date-Partitioned Paths</text>
+
+  <!-- Content rows -->
+  <rect x="26" y="148" width="280" height="218" fill="white" rx="6"/>
+  <text x="166" y="168" text-anchor="middle" font-size="9" font-weight="700" fill="#BF360C">WHAT IT CONTAINS</text>
+  <text x="36" y="184" font-size="8.5" fill="#546E7A">• /bronze/orders/yyyy/MM/dd/   (~100K records)</text>
+  <text x="36" y="198" font-size="8.5" fill="#546E7A">• /bronze/customers/           (~99K records)</text>
+  <text x="36" y="212" font-size="8.5" fill="#546E7A">• /bronze/products/            (~33K records)</text>
+  <text x="36" y="226" font-size="8.5" fill="#546E7A">• /bronze/payments/            (~104K records)</text>
+  <text x="36" y="240" font-size="8.5" fill="#546E7A">• /bronze/order_items/         (~113K records)</text>
+  <text x="36" y="254" font-size="8.5" fill="#546E7A">• /bronze/reviews/             (~100K records)</text>
+  <text x="36" y="268" font-size="8.5" fill="#546E7A">• /bronze/geolocation/         (~1M records)</text>
+  <line x1="36" y1="278" x2="296" y2="278" stroke="#EDE7F6" stroke-width="1"/>
+  <text x="166" y="293" text-anchor="middle" font-size="9" font-weight="700" fill="#BF360C">KEY CHARACTERISTICS</text>
+  <text x="36" y="308" font-size="8.5" fill="#546E7A">✗ No validation or cleansing</text>
+  <text x="36" y="322" font-size="8.5" fill="#546E7A">✗ Duplicates may exist</text>
+  <text x="36" y="336" font-size="8.5" fill="#546E7A">✓ Forever retention — full audit trail</text>
+  <text x="36" y="350" font-size="8.5" fill="#546E7A">✓ Ingested by ADF Lookup+ForEach pattern</text>
+
+  <!-- Arrow Bronze → Silver -->
+  <line x1="316" y1="225" x2="333" y2="225" stroke="#90A4AE" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="324" y="218" text-anchor="middle" font-size="7.5" fill="#78909C">PySpark</text>
+  <text x="324" y="236" text-anchor="middle" font-size="7.5" fill="#78909C">MERGE</text>
+
+  <!-- ════ SILVER LAYER ════ -->
+  <rect x="336" y="64" width="300" height="322" fill="#ECEFF1" rx="10" filter="url(#shadow)"/>
+  <rect x="336" y="64" width="300" height="44" fill="#37474F" rx="10"/>
+  <rect x="336" y="94" width="300" height="14" fill="#37474F"/>
+  <text x="486" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="white" letter-spacing="1">SILVER LAYER</text>
+  <text x="486" y="100" text-anchor="middle" font-size="9" fill="#B0BEC5">Cleansed · Validated · Deduplicated</text>
+
+  <rect x="346" y="118" width="280" height="22" fill="#546E7A" rx="4"/>
+  <text x="486" y="133" text-anchor="middle" font-size="9" font-weight="600" fill="white">Format: Delta Lake · ACID · Time Travel</text>
+
+  <rect x="346" y="148" width="280" height="218" fill="white" rx="6"/>
+  <text x="486" y="168" text-anchor="middle" font-size="9" font-weight="700" fill="#37474F">TABLES</text>
+  <text x="356" y="184" font-size="8.5" fill="#546E7A">• silver/orders       (order_id PK, status validated)</text>
+  <text x="356" y="198" font-size="8.5" fill="#546E7A">• silver/customers    (city cleaned, state upper)</text>
+  <text x="356" y="212" font-size="8.5" fill="#546E7A">• silver/products     (EN category, size_category)</text>
+  <text x="356" y="226" font-size="8.5" fill="#546E7A">• silver/payment_summary (order-level agg)</text>
+  <text x="356" y="240" font-size="8.5" fill="#546E7A">• silver/order_items  (line_total_value derived)</text>
+  <line x1="356" y1="250" x2="616" y2="250" stroke="#ECEFF1" stroke-width="1"/>
+  <text x="486" y="265" text-anchor="middle" font-size="9" font-weight="700" fill="#37474F">ADDED COLUMNS (every table)</text>
+  <text x="356" y="280" font-size="8.5" fill="#546E7A">ingestion_timestamp  — when the record landed</text>
+  <text x="356" y="294" font-size="8.5" fill="#546E7A">source_system        — origin pipeline name</text>
+  <text x="356" y="308" font-size="8.5" fill="#546E7A">record_hash          — SHA-256 change detection</text>
+  <line x1="356" y1="318" x2="616" y2="318" stroke="#ECEFF1" stroke-width="1"/>
+  <text x="356" y="333" font-size="8.5" fill="#546E7A">✓ Primary key uniqueness enforced</text>
+  <text x="356" y="347" font-size="8.5" fill="#546E7A">✓ Delta MERGE — idempotent re-runs safe</text>
+  <text x="356" y="361" font-size="8.5" fill="#546E7A">✓ Schema enforced, 30-day time travel</text>
+
+  <!-- Arrow Silver → Gold -->
+  <line x1="636" y1="225" x2="653" y2="225" stroke="#90A4AE" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text x="644" y="218" text-anchor="middle" font-size="7.5" fill="#78909C">PySpark</text>
+  <text x="644" y="236" text-anchor="middle" font-size="7.5" fill="#78909C">Star Schema</text>
+
+  <!-- ════ GOLD LAYER ════ -->
+  <rect x="656" y="64" width="328" height="322" fill="#FFFDE7" rx="10" filter="url(#shadow)"/>
+  <rect x="656" y="64" width="328" height="44" fill="#F9A825" rx="10"/>
+  <rect x="656" y="94" width="328" height="14" fill="#F9A825"/>
+  <text x="820" y="82" text-anchor="middle" font-size="13" font-weight="700" fill="white" letter-spacing="1">GOLD LAYER</text>
+  <text x="820" y="100" text-anchor="middle" font-size="9" fill="#FFF8E1">Star Schema · Business-Ready · Analytics-Optimised</text>
+
+  <rect x="666" y="118" width="308" height="22" fill="#F57F17" rx="4"/>
+  <text x="820" y="133" text-anchor="middle" font-size="9" font-weight="600" fill="white">Format: Delta Lake · Surrogate Keys · SCD Type 2</text>
+
+  <rect x="666" y="148" width="308" height="218" fill="white" rx="6"/>
+  <text x="820" y="168" text-anchor="middle" font-size="9" font-weight="700" fill="#F57F17">STAR SCHEMA TABLES</text>
+
+  <!-- Fact -->
+  <rect x="676" y="175" width="288" height="40" fill="#FFF3E0" rx="4"/>
+  <text x="820" y="191" text-anchor="middle" font-size="9" font-weight="700" fill="#E65100">FACT: fact_orders  (~100K rows)</text>
+  <text x="820" y="207" text-anchor="middle" font-size="8" fill="#757575">total_item_value · freight_value · payment_value · item_count · delivery_days</text>
+
+  <text x="820" y="228" text-anchor="middle" font-size="9" font-weight="700" fill="#F57F17">DIMENSIONS</text>
+  <text x="676" y="244" font-size="8.5" fill="#546E7A">dim_customers  → SCD Type 2 (valid_from/to, is_current, record_hash)</text>
+  <text x="676" y="258" font-size="8.5" fill="#546E7A">dim_products   → size_category, volume_cm3, EN category names</text>
+  <text x="676" y="272" font-size="8.5" fill="#546E7A">dim_date       → 4,018 rows (2016–2026), fiscal + calendar attrs</text>
+  <text x="676" y="286" font-size="8.5" fill="#546E7A">dim_geography  → zip → city/state/region (BR region mapping)</text>
+  <line x1="676" y1="296" x2="964" y2="296" stroke="#FFFDE7" stroke-width="1"/>
+  <text x="820" y="311" text-anchor="middle" font-size="9" font-weight="700" fill="#F57F17">CONSUMED BY</text>
+  <text x="676" y="326" font-size="8.5" fill="#546E7A">Azure Synapse — OPENROWSET(DELTA) external tables</text>
+  <text x="676" y="340" font-size="8.5" fill="#546E7A">Power BI       — 4-page dashboard, DAX measures</text>
+  <text x="676" y="354" font-size="8.5" fill="#546E7A">Synapse Views  — CLV, Revenue, Category, Seller perf</text>
+
+</svg>

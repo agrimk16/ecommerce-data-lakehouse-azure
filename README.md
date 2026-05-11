@@ -52,61 +52,11 @@ This platform processes e-commerce order, customer, product, and clickstream dat
 
 ## Architecture
 
-```
-                        ┌─────────────────────────────────────────────────────────┐
-                        │                    DATA SOURCES                         │
-                        │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐  │
-                        │  │ Orders   │ │ Products │ │ Customers│ │Clickstream│  │
-                        │  │ (API)    │ │ (CSV)    │ │ (JSON)   │ │ (Events)  │  │
-                        │  └────┬─────┘ └────┬─────┘ └────┬─────┘ └─────┬─────┘  │
-                        └───────┼────────────┼────────────┼─────────────┼─────────┘
-                                │            │            │             │
-                    ┌───────────▼────────────▼────────────▼─────┐      │
-                    │        AZURE DATA FACTORY                  │      │
-                    │    (Orchestration & Batch Ingestion)        │      │
-                    └───────────────────┬────────────────────────┘      │
-                                        │                               │
-                    ┌───────────────────▼───────────────────────┐      │
-                    │     ADLS Gen2 — BRONZE LAYER (Raw)        │      │
-                    │     /bronze/orders/                        │◄─────┘
-                    │     /bronze/products/                      │  (Event Hubs
-                    │     /bronze/customers/                     │   Capture)
-                    │     /bronze/clickstream/                   │
-                    └───────────────────┬───────────────────────┘
-                                        │
-                    ┌───────────────────▼───────────────────────┐
-                    │     AZURE DATABRICKS (PySpark)             │
-                    │     - Data Cleansing & Validation          │
-                    │     - Schema Enforcement                   │
-                    │     - Delta Lake UPSERT (MERGE)            │
-                    │     - Spark Structured Streaming            │
-                    └───────────────────┬───────────────────────┘
-                                        │
-                    ┌───────────────────▼───────────────────────┐
-                    │     ADLS Gen2 — SILVER LAYER (Cleansed)   │
-                    │     Delta Tables (validated, deduplicated) │
-                    └───────────────────┬───────────────────────┘
-                                        │
-                    ┌───────────────────▼───────────────────────┐
-                    │     AZURE DATABRICKS (PySpark)             │
-                    │     - Business Aggregations                │
-                    │     - Star Schema (Fact + Dimensions)      │
-                    │     - SCD Type 2 for Dimensions            │
-                    └───────────────────┬───────────────────────┘
-                                        │
-                    ┌───────────────────▼───────────────────────┐
-                    │     ADLS Gen2 — GOLD LAYER (Business)     │
-                    │     fact_orders, dim_customers,            │
-                    │     dim_products, dim_date, dim_geography  │
-                    └───────────────┬───────────┬───────────────┘
-                                    │           │
-                    ┌───────────────▼──┐  ┌─────▼──────────────┐
-                    │ SYNAPSE ANALYTICS│  │   POWER BI         │
-                    │ (SQL Analytics)  │  │   (Dashboards)     │
-                    └──────────────────┘  └────────────────────┘
-```
+![End-to-End Architecture](docs/images/architecture_overview.svg)
 
 ### Medallion Architecture
+
+![Medallion Layers](docs/images/medallion_layers.svg)
 
 | Layer      | Purpose                                 | Format               | Example                                |
 | ---------- | --------------------------------------- | -------------------- | -------------------------------------- |
@@ -228,6 +178,8 @@ For the complete step-by-step guide — including Azure Portal (UI) instructions
 
 ### Star Schema Design
 
+![Star Schema](docs/images/star_schema.svg)
+
 - **Grain**: One row per order
 - **fact_orders**: Measures (order_amount, freight_value, delivery_days) + foreign keys to all dimensions
 - **dim_customers**: SCD Type 2 with full history
@@ -256,9 +208,13 @@ For the complete step-by-step guide — including Azure Portal (UI) instructions
 
 ---
 
-## Screenshots
+## Architecture Diagrams
 
-> Screenshots will be added as each module is completed.
+| Diagram | Description |
+|---|---|
+| [End-to-End Architecture](docs/images/architecture_overview.svg) | Full pipeline: Sources → ADF → Bronze → Databricks → Silver → Gold → Synapse + Power BI, with CI/CD strip |
+| [Medallion Layers](docs/images/medallion_layers.svg) | Bronze / Silver / Gold layer breakdown: formats, tables, quality rules, and features |
+| [Star Schema](docs/images/star_schema.svg) | Gold layer entity diagram: `fact_orders` + 4 dimensions with columns, SCD Type 2, and FK relationships |
 
 ---
 
@@ -270,9 +226,10 @@ This project is for educational and portfolio purposes. Dataset is from [Kaggle 
 
 ## Author
 
-**[Your Name]** — Data Engineer
+**Agrim Kumar** — Senior Azure Data Engineer
 
-- LinkedIn: [linkedin.com/in/agrimkumar](https://linkedin.com/in/agrimkumar)
+- LinkedIn: [linkedin.com/in/agrimk](https://linkedin.com/in/agrimk)
 - GitHub: [github.com/agrimk16](https://github.com/agrimk16)
+- Medium: [medium.com/@agrimk16](https://medium.com/@agrimk16)
 
 ---

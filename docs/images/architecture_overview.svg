@@ -1,0 +1,268 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 510" font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#90A4AE"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.10"/>
+    </filter>
+  </defs>
+
+  <!-- Canvas background -->
+  <rect width="1300" height="510" fill="#F0F4F8" rx="14"/>
+
+  <!-- Title block -->
+  <text x="650" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#1A237E" letter-spacing="0.3">E-Commerce Azure Data Lakehouse — End-to-End Architecture</text>
+  <text x="650" y="54" text-anchor="middle" font-size="11" fill="#607D8B">ADF · Databricks · Delta Lake · ADLS Gen2 · Synapse Analytics · Event Hubs · Power BI · Azure DevOps</text>
+
+  <!-- ═══════════════ SECTION 1: SOURCES (x=20, w=130) ═══════════════ -->
+  <rect x="20" y="68" width="130" height="380" fill="#EDE7F6" rx="8" filter="url(#shadow)"/>
+  <rect x="20" y="68" width="130" height="30" fill="#512DA8" rx="8"/>
+  <rect x="20" y="86" width="130" height="12" fill="#512DA8"/>
+  <text x="85" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">SOURCES</text>
+
+  <rect x="30" y="108" width="110" height="70" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="85" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#4527A0">Kaggle CSV</text>
+  <line x1="40" y1="131" x2="130" y2="131" stroke="#EDE7F6" stroke-width="1"/>
+  <text x="85" y="144" text-anchor="middle" font-size="8.5" fill="#757575">8 datasets</text>
+  <text x="85" y="157" text-anchor="middle" font-size="8.5" fill="#757575">~600K records</text>
+  <text x="85" y="170" text-anchor="middle" font-size="8" fill="#9E9E9E">orders · products · customers</text>
+
+  <rect x="30" y="190" width="110" height="70" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="85" y="208" text-anchor="middle" font-size="9.5" font-weight="600" fill="#4527A0">Clickstream Events</text>
+  <line x1="40" y1="213" x2="130" y2="213" stroke="#EDE7F6" stroke-width="1"/>
+  <text x="85" y="226" text-anchor="middle" font-size="8.5" fill="#757575">5 events / sec</text>
+  <text x="85" y="239" text-anchor="middle" font-size="8.5" fill="#757575">Real-time stream</text>
+  <text x="85" y="252" text-anchor="middle" font-size="8" fill="#9E9E9E">page_view · add_to_cart · purchase</text>
+
+  <!-- Arrow 1 -->
+  <line x1="150" y1="258" x2="165" y2="258" stroke="#90A4AE" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════ SECTION 2: INGEST (x=168, w=148) ═══════════════ -->
+  <rect x="168" y="68" width="148" height="380" fill="#E3F2FD" rx="8" filter="url(#shadow)"/>
+  <rect x="168" y="68" width="148" height="30" fill="#1565C0" rx="8"/>
+  <rect x="168" y="86" width="148" height="12" fill="#1565C0"/>
+  <text x="242" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">INGEST</text>
+
+  <rect x="178" y="108" width="128" height="85" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="242" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#0D47A1">Azure Data Factory</text>
+  <line x1="188" y1="131" x2="296" y2="131" stroke="#E3F2FD" stroke-width="1"/>
+  <text x="242" y="144" text-anchor="middle" font-size="8.5" fill="#757575">Config-driven batch ingest</text>
+  <text x="242" y="157" text-anchor="middle" font-size="8.5" fill="#757575">Lookup + ForEach pattern</text>
+  <text x="242" y="170" text-anchor="middle" font-size="8.5" fill="#757575">4 parallel copy batches</text>
+  <text x="242" y="183" text-anchor="middle" font-size="8" fill="#9E9E9E">Daily schedule + tumbling trigger</text>
+
+  <rect x="178" y="205" width="128" height="72" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="242" y="223" text-anchor="middle" font-size="9.5" font-weight="600" fill="#0D47A1">Azure Event Hubs</text>
+  <line x1="188" y1="228" x2="296" y2="228" stroke="#E3F2FD" stroke-width="1"/>
+  <text x="242" y="241" text-anchor="middle" font-size="8.5" fill="#757575">clickstream-events hub</text>
+  <text x="242" y="254" text-anchor="middle" font-size="8.5" fill="#757575">5 partitions</text>
+  <text x="242" y="267" text-anchor="middle" font-size="8" fill="#9E9E9E">Streaming ingest path</text>
+
+  <!-- Arrow 2 -->
+  <line x1="316" y1="258" x2="331" y2="258" stroke="#90A4AE" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════ SECTION 3: BRONZE (x=334, w=130) ═══════════════ -->
+  <rect x="334" y="68" width="130" height="380" fill="#FBE9E7" rx="8" filter="url(#shadow)"/>
+  <rect x="334" y="68" width="130" height="30" fill="#BF360C" rx="8"/>
+  <rect x="334" y="86" width="130" height="12" fill="#BF360C"/>
+  <text x="399" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">BRONZE</text>
+
+  <rect x="344" y="108" width="110" height="200" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="399" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#BF360C">ADLS Gen2</text>
+  <line x1="354" y1="131" x2="444" y2="131" stroke="#FBE9E7" stroke-width="1"/>
+  <text x="399" y="144" text-anchor="middle" font-size="8.5" fill="#757575">Raw Parquet — as-is</text>
+  <text x="399" y="158" text-anchor="middle" font-size="8" fill="#9E9E9E">• /bronze/orders/</text>
+  <text x="399" y="171" text-anchor="middle" font-size="8" fill="#9E9E9E">• /bronze/customers/</text>
+  <text x="399" y="184" text-anchor="middle" font-size="8" fill="#9E9E9E">• /bronze/products/</text>
+  <text x="399" y="197" text-anchor="middle" font-size="8" fill="#9E9E9E">• /bronze/payments/</text>
+  <text x="399" y="210" text-anchor="middle" font-size="8" fill="#9E9E9E">• /bronze/order_items/</text>
+  <text x="399" y="223" text-anchor="middle" font-size="8" fill="#9E9E9E">• /bronze/reviews/</text>
+  <text x="399" y="236" text-anchor="middle" font-size="8" fill="#9E9E9E">• /bronze/geolocation/</text>
+  <text x="399" y="252" text-anchor="middle" font-size="8.5" fill="#757575">Date-partitioned paths</text>
+  <text x="399" y="265" text-anchor="middle" font-size="8" fill="#9E9E9E">yyyy / MM / dd /</text>
+  <text x="399" y="280" text-anchor="middle" font-size="8" fill="#9E9E9E">No validation · Audit trail</text>
+  <text x="399" y="295" text-anchor="middle" font-size="8" fill="#9E9E9E">Forever retention</text>
+
+  <!-- Arrow 3 -->
+  <line x1="464" y1="258" x2="479" y2="258" stroke="#90A4AE" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════ SECTION 4: CLEANSE (x=482, w=148) ═══════════════ -->
+  <rect x="482" y="68" width="148" height="380" fill="#FFF3E0" rx="8" filter="url(#shadow)"/>
+  <rect x="482" y="68" width="148" height="30" fill="#E65100" rx="8"/>
+  <rect x="482" y="86" width="148" height="12" fill="#E65100"/>
+  <text x="556" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">CLEANSE</text>
+
+  <rect x="492" y="108" width="128" height="200" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="556" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#E65100">Azure Databricks</text>
+  <line x1="502" y1="131" x2="610" y2="131" stroke="#FFF3E0" stroke-width="1"/>
+  <text x="556" y="143" text-anchor="middle" font-size="8.5" fill="#757575">5 PySpark Notebooks</text>
+  <text x="556" y="156" text-anchor="middle" font-size="8.5" fill="#757575">(run in parallel)</text>
+  <text x="556" y="172" text-anchor="middle" font-size="8" fill="#9E9E9E">✓ Type casting</text>
+  <text x="556" y="185" text-anchor="middle" font-size="8" fill="#9E9E9E">✓ Null handling</text>
+  <text x="556" y="198" text-anchor="middle" font-size="8" fill="#9E9E9E">✓ Deduplication</text>
+  <text x="556" y="211" text-anchor="middle" font-size="8" fill="#9E9E9E">✓ Business rule validation</text>
+  <text x="556" y="224" text-anchor="middle" font-size="8" fill="#9E9E9E">✓ SHA-256 record hash</text>
+  <text x="556" y="237" text-anchor="middle" font-size="8" fill="#9E9E9E">✓ Metadata columns</text>
+  <text x="556" y="253" text-anchor="middle" font-size="8.5" fill="#757575">Delta MERGE (UPSERT)</text>
+  <text x="556" y="266" text-anchor="middle" font-size="8" fill="#9E9E9E">Idempotent · Re-runnable</text>
+  <text x="556" y="280" text-anchor="middle" font-size="8" fill="#9E9E9E">Spark Structured Streaming</text>
+  <text x="556" y="293" text-anchor="middle" font-size="8" fill="#9E9E9E">5-min watermark (late data)</text>
+
+  <!-- Arrow 4 -->
+  <line x1="630" y1="258" x2="645" y2="258" stroke="#90A4AE" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════ SECTION 5: SILVER (x=648, w=130) ═══════════════ -->
+  <rect x="648" y="68" width="130" height="380" fill="#ECEFF1" rx="8" filter="url(#shadow)"/>
+  <rect x="648" y="68" width="130" height="30" fill="#37474F" rx="8"/>
+  <rect x="648" y="86" width="130" height="12" fill="#37474F"/>
+  <text x="713" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">SILVER</text>
+
+  <rect x="658" y="108" width="110" height="200" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="713" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#37474F">ADLS Gen2</text>
+  <line x1="668" y1="131" x2="758" y2="131" stroke="#ECEFF1" stroke-width="1"/>
+  <text x="713" y="144" text-anchor="middle" font-size="8.5" fill="#757575">Delta Lake Tables</text>
+  <text x="713" y="158" text-anchor="middle" font-size="8" fill="#9E9E9E">• silver/orders</text>
+  <text x="713" y="171" text-anchor="middle" font-size="8" fill="#9E9E9E">• silver/customers</text>
+  <text x="713" y="184" text-anchor="middle" font-size="8" fill="#9E9E9E">• silver/products</text>
+  <text x="713" y="197" text-anchor="middle" font-size="8" fill="#9E9E9E">• silver/payment_summary</text>
+  <text x="713" y="210" text-anchor="middle" font-size="8" fill="#9E9E9E">• silver/order_items</text>
+  <text x="713" y="226" text-anchor="middle" font-size="8.5" fill="#757575">ACID Transactions</text>
+  <text x="713" y="239" text-anchor="middle" font-size="8" fill="#9E9E9E">Time Travel enabled</text>
+  <text x="713" y="252" text-anchor="middle" font-size="8" fill="#9E9E9E">Schema enforced</text>
+  <text x="713" y="265" text-anchor="middle" font-size="8" fill="#9E9E9E">Validated · Deduplicated</text>
+  <text x="713" y="280" text-anchor="middle" font-size="8" fill="#9E9E9E">ingestion_timestamp</text>
+  <text x="713" y="293" text-anchor="middle" font-size="8" fill="#9E9E9E">source_system · record_hash</text>
+
+  <!-- Arrow 5 -->
+  <line x1="778" y1="258" x2="793" y2="258" stroke="#90A4AE" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════ SECTION 6: TRANSFORM (x=796, w=148) ═══════════════ -->
+  <rect x="796" y="68" width="148" height="380" fill="#FFF8E1" rx="8" filter="url(#shadow)"/>
+  <rect x="796" y="68" width="148" height="30" fill="#F57F17" rx="8"/>
+  <rect x="796" y="86" width="148" height="12" fill="#F57F17"/>
+  <text x="870" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">TRANSFORM</text>
+
+  <rect x="806" y="108" width="128" height="200" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="870" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#E65100">Azure Databricks</text>
+  <line x1="816" y1="131" x2="924" y2="131" stroke="#FFF8E1" stroke-width="1"/>
+  <text x="870" y="143" text-anchor="middle" font-size="8.5" fill="#757575">Star Schema Build</text>
+  <text x="870" y="156" text-anchor="middle" font-size="8.5" fill="#757575">5 notebooks (staged)</text>
+  <text x="870" y="172" text-anchor="middle" font-size="8" fill="#9E9E9E">① dim_date</text>
+  <text x="870" y="185" text-anchor="middle" font-size="8" fill="#9E9E9E">② dim_customers (SCD 2)</text>
+  <text x="870" y="198" text-anchor="middle" font-size="8" fill="#9E9E9E">③ dim_products</text>
+  <text x="870" y="211" text-anchor="middle" font-size="8" fill="#9E9E9E">④ dim_geography</text>
+  <text x="870" y="224" text-anchor="middle" font-size="8" fill="#9E9E9E">⑤ fact_orders</text>
+  <text x="870" y="240" text-anchor="middle" font-size="8.5" fill="#757575">Dims first → Fact last</text>
+  <text x="870" y="253" text-anchor="middle" font-size="8" fill="#9E9E9E">valid_from / valid_to</text>
+  <text x="870" y="266" text-anchor="middle" font-size="8" fill="#9E9E9E">is_current tracking</text>
+  <text x="870" y="279" text-anchor="middle" font-size="8" fill="#9E9E9E">Surrogate keys (SK)</text>
+  <text x="870" y="292" text-anchor="middle" font-size="8" fill="#9E9E9E">Multi-table joins</text>
+
+  <!-- Arrow 6 -->
+  <line x1="944" y1="258" x2="959" y2="258" stroke="#90A4AE" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════ SECTION 7: GOLD (x=962, w=130) ═══════════════ -->
+  <rect x="962" y="68" width="130" height="380" fill="#FFFDE7" rx="8" filter="url(#shadow)"/>
+  <rect x="962" y="68" width="130" height="30" fill="#F9A825" rx="8"/>
+  <rect x="962" y="86" width="130" height="12" fill="#F9A825"/>
+  <text x="1027" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">GOLD</text>
+
+  <rect x="972" y="108" width="110" height="200" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="1027" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#F57F17">ADLS Gen2</text>
+  <line x1="982" y1="131" x2="1072" y2="131" stroke="#FFFDE7" stroke-width="1"/>
+  <text x="1027" y="144" text-anchor="middle" font-size="8.5" fill="#757575">Star Schema Delta</text>
+  <text x="1027" y="158" text-anchor="middle" font-size="8" fill="#9E9E9E">• fact_orders</text>
+  <text x="1027" y="171" text-anchor="middle" font-size="8" fill="#9E9E9E">• dim_customers</text>
+  <text x="1027" y="184" text-anchor="middle" font-size="8" fill="#9E9E9E">• dim_products</text>
+  <text x="1027" y="197" text-anchor="middle" font-size="8" fill="#9E9E9E">• dim_date</text>
+  <text x="1027" y="210" text-anchor="middle" font-size="8" fill="#9E9E9E">• dim_geography</text>
+  <text x="1027" y="226" text-anchor="middle" font-size="8.5" fill="#757575">Business-ready layer</text>
+  <text x="1027" y="239" text-anchor="middle" font-size="8" fill="#9E9E9E">~100K fact rows</text>
+  <text x="1027" y="252" text-anchor="middle" font-size="8" fill="#9E9E9E">4,018-row dim_date</text>
+  <text x="1027" y="265" text-anchor="middle" font-size="8" fill="#9E9E9E">SCD Type 2 history</text>
+  <text x="1027" y="278" text-anchor="middle" font-size="8" fill="#9E9E9E">Analytics-optimised</text>
+  <text x="1027" y="291" text-anchor="middle" font-size="8" fill="#9E9E9E">Query-ready for BI</text>
+
+  <!-- Arrow 7 -->
+  <line x1="1092" y1="258" x2="1107" y2="258" stroke="#90A4AE" stroke-width="2" marker-end="url(#arr)"/>
+
+  <!-- ═══════════════ SECTION 8: ANALYTICS (x=1110, w=170) ═══════════════ -->
+  <rect x="1110" y="68" width="170" height="380" fill="#E8F5E9" rx="8" filter="url(#shadow)"/>
+  <rect x="1110" y="68" width="170" height="30" fill="#2E7D32" rx="8"/>
+  <rect x="1110" y="86" width="170" height="12" fill="#2E7D32"/>
+  <text x="1195" y="88" text-anchor="middle" font-size="10" font-weight="700" fill="white" letter-spacing="1">ANALYTICS</text>
+
+  <rect x="1120" y="108" width="150" height="105" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="1195" y="126" text-anchor="middle" font-size="9.5" font-weight="600" fill="#1B5E20">Azure Synapse</text>
+  <line x1="1130" y1="131" x2="1260" y2="131" stroke="#E8F5E9" stroke-width="1"/>
+  <text x="1195" y="143" text-anchor="middle" font-size="8.5" fill="#757575">Serverless SQL Pool</text>
+  <text x="1195" y="156" text-anchor="middle" font-size="8" fill="#9E9E9E">OPENROWSET(DELTA)</text>
+  <text x="1195" y="169" text-anchor="middle" font-size="8" fill="#9E9E9E">Managed Identity auth</text>
+  <text x="1195" y="182" text-anchor="middle" font-size="8" fill="#9E9E9E">4 analytical views</text>
+  <text x="1195" y="195" text-anchor="middle" font-size="8" fill="#9E9E9E">CLV · Revenue · Category</text>
+  <text x="1195" y="207" text-anchor="middle" font-size="8" fill="#9E9E9E">No ETL — reads Delta direct</text>
+
+  <rect x="1120" y="225" width="150" height="110" fill="white" rx="5" filter="url(#shadow)"/>
+  <text x="1195" y="243" text-anchor="middle" font-size="9.5" font-weight="600" fill="#1B5E20">Power BI</text>
+  <line x1="1130" y1="248" x2="1260" y2="248" stroke="#E8F5E9" stroke-width="1"/>
+  <text x="1195" y="260" text-anchor="middle" font-size="8.5" fill="#757575">4 Dashboard Pages</text>
+  <text x="1195" y="273" text-anchor="middle" font-size="8" fill="#9E9E9E">Executive Summary</text>
+  <text x="1195" y="286" text-anchor="middle" font-size="8" fill="#9E9E9E">Customer Analytics</text>
+  <text x="1195" y="299" text-anchor="middle" font-size="8" fill="#9E9E9E">Delivery Performance</text>
+  <text x="1195" y="312" text-anchor="middle" font-size="8" fill="#9E9E9E">Real-Time Metrics</text>
+  <text x="1195" y="325" text-anchor="middle" font-size="8" fill="#9E9E9E">DAX · MoM Growth</text>
+
+  <!-- ═══════════════ CI/CD BADGE STRIP ═══════════════ -->
+  <rect x="20" y="458" width="1260" height="42" fill="white" rx="7" filter="url(#shadow)"/>
+  <text x="30" y="474" font-size="9" font-weight="700" fill="#37474F">CI/CD PIPELINE</text>
+  <text x="30" y="488" font-size="8.5" fill="#9E9E9E">Azure DevOps →</text>
+
+  <!-- Stage boxes -->
+  <rect x="115" y="463" width="80" height="28" fill="#E8EAF6" rx="4"/>
+  <text x="155" y="476" text-anchor="middle" font-size="8.5" fill="#3949AB" font-weight="600">① Validate</text>
+  <text x="155" y="488" text-anchor="middle" font-size="7.5" fill="#7986CB">Bicep lint + What-If</text>
+
+  <text x="200" y="479" font-size="11" fill="#B0BEC5">›</text>
+
+  <rect x="205" y="463" width="80" height="28" fill="#E8EAF6" rx="4"/>
+  <text x="245" y="476" text-anchor="middle" font-size="8.5" fill="#3949AB" font-weight="600">② Infra</text>
+  <text x="245" y="488" text-anchor="middle" font-size="7.5" fill="#7986CB">Deploy all services</text>
+
+  <text x="290" y="479" font-size="11" fill="#B0BEC5">›</text>
+
+  <rect x="295" y="463" width="80" height="28" fill="#E8EAF6" rx="4"/>
+  <text x="335" y="476" text-anchor="middle" font-size="8.5" fill="#3949AB" font-weight="600">③ ADF</text>
+  <text x="335" y="488" text-anchor="middle" font-size="7.5" fill="#7986CB">Publish pipelines</text>
+
+  <text x="380" y="479" font-size="11" fill="#B0BEC5">›</text>
+
+  <rect x="385" y="463" width="90" height="28" fill="#E8EAF6" rx="4"/>
+  <text x="430" y="476" text-anchor="middle" font-size="8.5" fill="#3949AB" font-weight="600">④ Databricks</text>
+  <text x="430" y="488" text-anchor="middle" font-size="7.5" fill="#7986CB">Upload notebooks</text>
+
+  <text x="480" y="479" font-size="11" fill="#B0BEC5">›</text>
+
+  <rect x="485" y="463" width="80" height="28" fill="#E8EAF6" rx="4"/>
+  <text x="525" y="476" text-anchor="middle" font-size="8.5" fill="#3949AB" font-weight="600">⑤ Synapse</text>
+  <text x="525" y="488" text-anchor="middle" font-size="7.5" fill="#7986CB">Deploy SQL views</text>
+
+  <text x="570" y="479" font-size="11" fill="#B0BEC5">›</text>
+
+  <rect x="575" y="463" width="90" height="28" fill="#E8EAF6" rx="4"/>
+  <text x="620" y="476" text-anchor="middle" font-size="8.5" fill="#3949AB" font-weight="600">⑥ DQ Tests</text>
+  <text x="620" y="488" text-anchor="middle" font-size="7.5" fill="#7986CB">Bronze/Silver/Gold</text>
+
+  <!-- Security & Format legend on right -->
+  <text x="700" y="474" font-size="9" font-weight="700" fill="#37474F">STORAGE FORMAT</text>
+  <rect x="700" y="480" width="8" height="8" fill="#FBE9E7" stroke="#BF360C" stroke-width="1" rx="1"/>
+  <text x="712" y="488" font-size="8" fill="#757575">Bronze: Parquet</text>
+  <rect x="770" y="480" width="8" height="8" fill="#ECEFF1" stroke="#37474F" stroke-width="1" rx="1"/>
+  <text x="782" y="488" font-size="8" fill="#757575">Silver: Delta</text>
+  <rect x="832" y="480" width="8" height="8" fill="#FFFDE7" stroke="#F9A825" stroke-width="1" rx="1"/>
+  <text x="844" y="488" font-size="8" fill="#757575">Gold: Delta</text>
+
+  <text x="920" y="474" font-size="9" font-weight="700" fill="#37474F">SECURITY</text>
+  <text x="920" y="488" font-size="8" fill="#757575">Azure Key Vault · Managed Identity · RBAC · TLS 1.2</text>
+
+</svg>
